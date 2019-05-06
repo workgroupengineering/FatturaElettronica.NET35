@@ -17,17 +17,8 @@
     <LangVersion>8</LangVersion>
   </PropertyGroup>
 
-<ItemGroup>
-    <None Include="LICENSE.txt" Pack="true" PackagePath="" />
-</ItemGroup>
-
   <ItemGroup>
-    <Compile Remove="Tests\**" />
-    <Compile Remove="Test\**" />
-    <EmbeddedResource Remove="Tests\**" />
-    <EmbeddedResource Remove="Test\**" />
-    <None Remove="Tests\**" />
-    <None Remove="Test\**" />
+    <None Include="..\..\LICENSE.txt" Link="LICENSE.txt" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
