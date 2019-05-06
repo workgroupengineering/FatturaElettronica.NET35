@@ -5,7 +5,7 @@ image: Visual Studio 2017
 #init:
 #  tzutil /s "W. Europe Standard Time"
 before_build:
-  cmd: nuget restore
+  cmd: nuget restore ./src/FatturaElettronica.sln
 build:
-  project: FatturaElettronica.sln
+  project: ./src/FatturaElettronica.sln
   verbosity: minimal

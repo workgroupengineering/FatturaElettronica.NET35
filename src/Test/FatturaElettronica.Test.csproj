@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FatturaElettronica.csproj" />
+    <ProjectReference Include="..\FatturaElettronica\FatturaElettronica.csproj" />
   </ItemGroup>
 
   <ItemGroup>
