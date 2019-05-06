@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FatturaElettronica", "FatturaElettronica\FatturaElettronica.csproj", "{F42DF440-2B7A-4CAF-9714-76369245B4B4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FatturaElettronica.Test", "Test\FatturaElettronica.Test.csproj", "{3D4B4339-299D-463E-8336-5F9812ABCAC0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F42DF440-2B7A-4CAF-9714-76369245B4B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F42DF440-2B7A-4CAF-9714-76369245B4B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F42DF440-2B7A-4CAF-9714-76369245B4B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F42DF440-2B7A-4CAF-9714-76369245B4B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D4B4339-299D-463E-8336-5F9812ABCAC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D4B4339-299D-463E-8336-5F9812ABCAC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D4B4339-299D-463E-8336-5F9812ABCAC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D4B4339-299D-463E-8336-5F9812ABCAC0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D75DC96A-3736-41A2-8139-C56A1235CEC7}
+	EndGlobalSection
+EndGlobal
