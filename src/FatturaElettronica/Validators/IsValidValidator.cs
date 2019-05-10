@@ -1,4 +1,7 @@
 ﻿using System;
+#if NET35
+using System.Linq;
+#endif
 using System.Collections.Generic;
 using FatturaElettronica.Tabelle;
 using FluentValidation.Validators;
@@ -13,8 +16,11 @@ namespace FatturaElettronica.Validators
 
         protected override bool IsValid(PropertyValidatorContext context)
         {
+#if NET35
+            context.MessageFormatter.AppendArgument("AcceptedValues", string.Format(string.Join(", ", Domain.ToArray())));
+#else
             context.MessageFormatter.AppendArgument("AcceptedValues", string.Format(string.Join(", ", Domain)));
-
+#endif
             if (context.PropertyValue is string codice)
             {
                 return Domain.Contains(codice);
