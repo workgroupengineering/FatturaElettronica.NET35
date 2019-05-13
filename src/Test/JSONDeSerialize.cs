@@ -11,6 +11,11 @@ namespace FatturaElettronica.Test
     [TestClass]
     public class JSONDeSerialize
     {
+        [TestInitialize]
+        public void RunBeforeAnyTests()
+        {
+            Directory.SetCurrentDirectory(System.IO.Path.GetDirectoryName(GetType().Assembly.Location));
+        }
         [TestMethod]
         public void DeserializeAndThenSerializeOfficialPRSample()
         {
