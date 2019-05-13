@@ -103,8 +103,8 @@ namespace FatturaElettronica.Test
 
         private FatturaBase DeserializeAny(string fileName)
         {
-            using var fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            return FatturaBase.CreateInstanceFromXml(fileStream);
+            using (var fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read)) 
+                return FatturaBase.CreateInstanceFromXml(fileStream);
         }
 
         private void ValidateInvoice(FatturaOrdinaria f, string expectedFormat)
