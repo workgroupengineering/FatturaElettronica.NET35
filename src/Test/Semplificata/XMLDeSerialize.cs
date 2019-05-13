@@ -12,6 +12,12 @@ namespace FatturaElettronica.Test.Semplificata
     [TestClass]
     public class XmlDeSerialize
     {
+        [TestInitialize]
+        public void RunBeforeAnyTests()
+        {
+            Directory.SetCurrentDirectory(System.IO.Path.GetDirectoryName(GetType().Assembly.Location));
+        }
+
         [TestMethod]
         public void SerializeFatturaSemplificataHeader()
         {
