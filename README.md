@@ -1,8 +1,21 @@
-﻿# Fattura Elettronica per .NET
+﻿# Fattura Elettronica per .NET **(Unofficial)**
+
+Questa è una versione non ufficiale, la versione ufficiale si trova **[qui](https://github.com/FatturaElettronica/FatturaElettronica.NET)**.
+
+La differenze rispetto alla build ufficiale sono:
+
+- Aggiunto il supporto al .NET Framework 3.5
+- Rimosso il supporto a .NET Standard v1.1.
+
+Il motivo che ci ha spinto alla creazione di questa fork, e perché abbiamo la necessità di mantenere un vecchio software legato ad una libreria che non è compatibile con versioni del .NET Framework superiori alla 3.5. Prima di procedere a questo fork abbiamo creato un **[PR](https://github.com/FatturaElettronica/FatturaElettronica.Core/pull/9)** che introduceva il supporto al .NET Framework 3.5, ma per comprensibili motivi lo sviluppatore non ha voluto integrarla. Avremmo potuto scegliere di svilupparla privatamente, ma nello spirito dell'open source abbiamo deciso di condividerla con tutti.
+Vi preghiamo si supportare il progetto **[originale](https://github.com/FatturaElettronica/FatturaElettronica.NET)** perché senza di esso questa fork non avrebbe avuto vita.
+
+
+## Status della verisone ufficiale
 
 [![Build Status](https://dev.azure.com/FatturaElettronicaNET/FatturaElettronica/_apis/build/status/FatturaElettronica.FatturaElettronica.NET?branchName=master)](https://dev.azure.com/FatturaElettronicaNET/FatturaElettronica/_build/latest?definitionId=1&branchName=master) [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=FatturaElettronica/FatturaElettronica.NET)](https://dependabot.com) [![NuGet version](https://badge.fury.io/nu/FatturaElettronica.svg)](https://badge.fury.io/nu/FatturaElettronica)
 
-## Caratteristiche
+## Caratteristiche della verisone ufficiale
 
 - Lettura e scrittura nel formato XML conforme alle [specifiche tecniche ufficiali][pa].
 - Convalida offline in osservanza alle specifiche tecniche.
