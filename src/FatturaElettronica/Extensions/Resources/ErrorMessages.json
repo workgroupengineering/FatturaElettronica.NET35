@@ -1,0 +1,9 @@
+{
+  "FirmaException": "Impossibile firmare il contenuto del file",
+  "IdCodiceIsMissing": "IdCodice non specificato",
+  "IdFiscaleIsMissing": "IdFiscale non specificato",
+  "IdPaeseIsWrongOrMissing": "Impossibile firmare il contenuto del file",
+  "LastBillingNumberIsTooLong": "Il file pfx non esiste",
+  "PfxIsMissing": "Il file pfx non esiste",
+  "SignatureException": "Una firma non corrisponde al certificato contenuto nel file"
+}
