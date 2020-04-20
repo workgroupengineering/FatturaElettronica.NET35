@@ -11,7 +11,7 @@
     <Description>Fattura elettronica per le aziende e la pubblica amministrazione italiana</Description>
     <Copyright>Copyright © CIR2000 2017-2020</Copyright>
     <PackageProjectUrl>https://fatturaelettronicaopensource.org</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/FatturaElettronica/FatturaElettronica.NET</RepositoryUrl>
+    <RepositoryUrl Condition="'$(RepositoryUrl)'==''">https://github.com/FatturaElettronica/FatturaElettronica.NET</RepositoryUrl>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <NoWarn>NU5105</NoWarn>
     <LangVersion>8</LangVersion>
@@ -38,6 +38,10 @@
   <ItemGroup Label="NetStandard2" Condition="$(TargetFramework) != 'net35'">
     <PackageReference Include="Portable.BouncyCastle" Version="1.8.6.7" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="4.7.0" />    
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
   
 </Project>
