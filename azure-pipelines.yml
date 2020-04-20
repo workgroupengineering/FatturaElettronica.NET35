@@ -1,28 +1,166 @@
-# ASP.NET Core
-# Build and test ASP.NET Core projects targeting .NET Core.
-# Add steps that run tests, create a NuGet package, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+trigger:
+- net_35
 
-strategy:
-  matrix:
-    linux:
-      imageName: 'ubuntu-16.04'
-#    mac:
-#      imageName: 'macos-10.13'
-    windows:
-      imageName: 'vs2017-win2016'
+jobs:
+- job: Build
+  displayName: 'Build and Testing'
+  strategy:
+    matrix:
+      linux:
+        imageName: 'ubuntu-16.04'
+#     mac:
+#        imageName: 'macos-10.13'
+      windows:
+        imageName: 'vs2017-win2016'
+  pool:
+    vmImage: $(imageName)
+  variables:
+    buildPlatform: 'Any CPU'
+    buildConfiguration: 'Release'
+    nugetLocal: '$(System.DefaultWorkingDirectory)/Local'
+  steps:
+  - script: |
+        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+        sudo apt install apt-transport-https
+        echo "deb https://download.mono-project.com/repo/ubuntu stable-xenial main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+        sudo apt update
+        sudo apt-get -yq install mono-devel
+    displayName: 'Installing mono'
+    condition: eq(variables['imageName'],'ubuntu-16.04')
+  - pwsh: |
+      $dest = "$(nugetLocal)"
+      if (!(Test-Path $dest)) {
+        New-Item -Path "$(nugetLocal)" -ItemType Directory | Out-Null
+        $xml = "<?xml version=""1.0"" encoding=""utf-8""?>`r`n    <configuration>`r`n       <packageSources>`r`n        <add key=""nuget.org"" value=""https://api.nuget.org/v3/index.json"" protocolVersion=""3"" />`r`n        <add key=""Private Nuget"" value=""$dest"" />`r`n      </packageSources>`r`n    </configuration>"
+        $xml | Out-File -FilePath (Join-Path "$(System.DefaultWorkingDirectory)" 'nuget.config')
+        Write-Host $xml
+        $regex = '\[(?<Name>[.\w]+)\]\((?<Uri>https?:\/\/[\w\d./?=#\.]+)\)'
+        $matches =( "$(PackagesSource)" |
+          Select-String $regex -AllMatches).Matches
+        Write-Host "Remote packages founded  $($matches.Length)"
+        $matches | ForEach-Object {
+          Write-Host "Start downloading..."
+          $Name = $_.Groups[1].Value
+          $Uri = $_.Groups[2].Value
+          $OutPath = $(Join-Path $dest $Name)
+          #Invoke-WebRequest -Uri $Uri -OutFile $OutPath
+          (New-Object Net.WebClient).DownloadFile($Uri, $OutPath)
+          Write-Host  "Exists  $($OutPath) $(Test-Path $OutPath)"
+        }
+      }
+    displayName: 'Download External no public Nuget Packages'
+  - script: dotnet restore ./src/FatturaElettronica.sln --configfile $(System.DefaultWorkingDirectory)/nuget.config
+    displayName: 'Restore Remote packages'
+  - task: DotNetCoreCLI@2
+    displayName: 'Building $(buildConfiguration)'
+    inputs:
+      command: build
+      projects: './src/FatturaElettronica.sln'
+      arguments: '--configuration $(buildConfiguration) -p:RepositoryUrl=$(RepositoryUrl)'
+  - task: VSTest@2
+    displayName: "Test on .NET Framework 3.5 $(imageName)"
+    condition: eq( variables['Agent.OS'], 'Windows_NT' )
+    inputs:
+      testRunTitle: '.NET Framework 3.5 $(imageName)'
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: |
+        **\*test*.dll
+        !**\*TestAdapter.dll
+        !**\obj\*
+      searchFolder: 'src\\test\\bin\\$(buildConfiguration)\\net35\'
+      otherConsoleOptions: /Framework:".NETFramework,Version=v3.5"
+  - task: DotNetCoreCLI@2
+    displayName: "Test on .NET Core 3.0 $(imageName)"
+    inputs:
+      command: test
+      projects: '**/FatturaElettronica.Test.csproj'
+      testRunTitle: '.NET Core 3.0 $(imageName)'
+      arguments: '--configuration $(buildConfiguration) --framework netcoreapp3.0'
+  - task: CopyFiles@2
+    condition: eq( variables['Agent.OS'], 'Windows_NT' ) 
+    inputs:
+      SourceFolder: '$(System.DefaultWorkingDirectory)/'
+      Contents: '**/*.nupkg'
+      TargetFolder: '$(build.artifactstagingdirectory)'
+      CleanTargetFolder: true
+      flattenFolders: true
+      preserveTimestamp: true
+  - task: PublishBuildArtifacts@1
+    displayName: "Uploading packages"
+    condition: eq( variables['Agent.OS'], 'Windows_NT' )
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'Packages'
+- job:
+  displayName: "GitHub Release"
+  dependsOn: Build
+  variables:
+    packSource: '$(Build.ArtifactStagingDirectory)/Packages'
+    version:
+    isPreRelease: false
+    officialChangesUrl:
+    officialReleaseUrl:
+  steps:
+    - checkout: self
+      persistCredentials: true
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        artifactName: 'Packages'
+    - pwsh: |
+        $dest = "$(packSource)/*"
+        Write-Host "Start enum of $($dest)"
+        $i = 0
+        $items = Get-ChildItem -Path $dest
+        $regex = 'FatturaElettronica\.(?<Version>(?<Major>\d+)\.(?<Minor>\d+)\.(?<Patch>\d+)(?:-(?<Suffix>.*))?)\.nupkg'
+        $items | ForEach-Object {
+          Write-Host  $_
+          $_ -match $regex
+          if ($Matches){
+            $Version=$Matches.Version
+            $officialChangesUrl="https://github.com/FatturaElettronica/FatturaElettronica.NET/blob/master/CHANGES.md#v$($Matches.Major)$($Matches.Minor)" 
+            $officialReleaseUrl="https://github.com/FatturaElettronica/FatturaElettronica.NET/releases/tag/v$($Matches.Major).$($Matches.Minor)"
+            
+            
+            if ($Matches.Suffix){
+              Write-Host "##vso[task.setvariable variable=isPreRelease;]$true"
+              $Suffix=$Matches.Suffix
+              $officialReleaseUrl="$officialReleaseUrl-$Suffix"
+              $clearedSuffix =  $Suffix -replace "\.", "" 
+              $officialChangesUrl="$officialChangesUrl-$clearedSuffix"
+            }
+            elseif(-not (0 -eq $Matches.Patch)) {
+              $Patch=$Matches.Patch 
+              $officialReleaseUrl="$officialReleaseUrl.$($Patch)"
+              $officialChangesUrl="$officialChangesUrl$($Patch)"
+            }
 
-pool:
-  vmImage: $(imageName)
-
-variables:
-  buildConfiguration: 'Release'
-
-steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build ./src/FatturaElettronica.sln $(buildConfiguration)'
-- task: DotNetCoreCLI@2
-  inputs:
-    command: test
-    projects: '**/*Test/*.csproj'
-    arguments: '--configuration $(buildConfiguration)'
+            Write-Host "##vso[task.setvariable variable=version;]$Version"
+            Write-Host "##vso[task.setvariable variable=officialReleaseUrl;]$officialReleaseUrl"
+            Write-Host "##vso[task.setvariable variable=officialChangesUrl;]$officialChangesUrl"
+            exit 0
+          }
+          $i=$i+1
+          Write-Host "##vso[task.logissue type=error;Code=100;]Package not founded."
+          exit 100
+        }
+        Write-Host "End enum $i"
+    - script: |
+        echo 'Version=$(version) Prelease:$(isPreRelease)'
+        git config --global user.email "$(gitmail)"
+        git config --global user.name "$(gituser)"
+        git tag -f -m "Alignment with the official version $(version)" $(version)
+        git push origin $(version) -f
+    - task: GitHubRelease@1
+      inputs:
+        gitHubConnection: 'github.com_workgroupengineering'
+        repositoryName: 'workgroupengineering/FatturaElettronica.NET'
+        action: 'create'
+        tagSource: 'userSpecifiedTag'
+        tag: '$(Version)'
+        title: 'Alignment with the official FatturaElettronica.NET $(Version)'
+        releaseNotesSource: inline
+        releaseNotesInline: 'Changes logs official version [$(version)]($(officialChangesUrl))'
+        assets: '$(packSource)/*'
+        isPreRelease: $(isPreRelease)
+        addChangeLog: false
