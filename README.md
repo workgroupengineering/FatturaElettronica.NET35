@@ -1,5 +1,7 @@
 ﻿# Fattura Elettronica per .NET **(Unofficial)**
 
+[![Build Status](https://dev.azure.com/workgroupengineering/workgroupengineering/_apis/build/status/workgroupengineering.FatturaElettronica.NET?branchName=net_35)](https://dev.azure.com/workgroupengineering/workgroupengineering/_build/latest?definitionId=2&branchName=net_35)
+
 Questa è una versione non ufficiale, la versione ufficiale si trova **[qui](https://github.com/FatturaElettronica/FatturaElettronica.NET)**.
 
 La differenze rispetto alla build ufficiale sono:
