@@ -242,17 +242,21 @@ namespace FatturaElettronica.Core
         /// <returns></returns>
         private static PropertyInfo GetPropertyInfo(BaseClassSerializable value, string name)
         {
-            var properties = value.GetAllDataProperties().ToList();
+            var property = value.GetKnownNonDataProperty(name);
+            if (property != null)
+                return property;
+
+            var dataProperties = value.GetAllDataProperties().ToList();
 
             // XmlElementAttribute comes first
-            var property = properties
+            property = dataProperties
                 .FirstOrDefault(prop => prop.GetCustomAttributes(typeof(XmlElementAttribute), false)
                     .Any(ca => ((XmlElementAttribute) ca).ElementName.Equals(name,
                         StringComparison.OrdinalIgnoreCase)));
 
             // Fallback to property name
             if (property == null)
-                property = properties.FirstOrDefault(n => n.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                property = dataProperties.FirstOrDefault(n => n.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
             return property;
         }
@@ -389,6 +393,11 @@ namespace FatturaElettronica.Core
             }
         }
 
+        protected virtual void ReadAndHandleXmlStartElement(XmlReader r)
+        {
+            r.ReadStartElement();
+        }
+
         /// <summary>
         /// Deserializes the current BusinessObject from a XML stream.
         /// </summary>
@@ -398,7 +407,8 @@ namespace FatturaElettronica.Core
         {
             var isEmpty = r.IsEmptyElement;
 
-            r.ReadStartElement();
+            ReadAndHandleXmlStartElement(r);
+
             if (isEmpty) return;
 
             var properties = GetAllDataProperties().ToList();

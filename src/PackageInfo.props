@@ -1,0 +1,19 @@
+<Project DefaultTargets="Build" 
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Version>3.1.0</Version>
+    <PackageId>FatturaElettronica.NET35</PackageId>
+    <PackageIcon>fattura_elettronica.png</PackageIcon>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://fatturaelettronicaopensource.org</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/workgroupengineering/FatturaElettronica.NET35</RepositoryUrl>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageReleaseNotes>https://github.com/workgroupengineering/FatturaElettronica.NET35/releases</PackageReleaseNotes>
+    <PackageTags>.NET Framework 3.5;net35;Fattura Elettornica;SDI;PA;Italia</PackageTags>
+    <Description>Porting in NET35 non ufficiale di Fattura elettronica per le aziende e la pubblica amministrazione italiana(https://fatturaelettronicaopensource.org)</Description>
+  </PropertyGroup>
+
+  <ItemGroup Label="PackageIcon">
+    <None Include="$(MSBuildThisFileDirectory)/../Artwork/fattura_elettronica.png" Pack="true" PackagePath=""/>
+  </ItemGroup>
+</Project>

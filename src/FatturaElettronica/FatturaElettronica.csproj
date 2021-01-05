@@ -1,19 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net35</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>3.0.3</Version>
-    <PackageId>FatturaElettronica</PackageId>
+
     <Authors>Nicola Iarocci</Authors>
     <Company>CIR 2000</Company>
     <Product>FatturaElettronica.NET</Product>
-    <Description>Fattura elettronica per le aziende e la pubblica amministrazione italiana</Description>
-    <Copyright>Copyright © CIR2000 2017-2020</Copyright>
-    <PackageProjectUrl>https://fatturaelettronicaopensource.org</PackageProjectUrl>
-    <RepositoryUrl Condition="'$(RepositoryUrl)'==''">https://github.com/FatturaElettronica/FatturaElettronica.NET</RepositoryUrl>
-    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <NoWarn>NU5105</NoWarn>
+    <Copyright>Copyright © CIR2000 2017-2021</Copyright>
     <LangVersion>8</LangVersion>
   </PropertyGroup>
 
@@ -26,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Common">
-    <PackageReference Include="FluentValidation.NET35" Version="9.0.0" />
+    <PackageReference Include="FluentValidation.NET35" Version="9.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />       
   </ItemGroup>
 
@@ -36,16 +29,15 @@
   </ItemGroup>
     
   <ItemGroup Label="NetStandard2" Condition="$(TargetFramework) != 'net35'">
-    <PackageReference Include="Portable.BouncyCastle" Version="1.8.6.7" />
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="4.7.0" />    
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Portable.BouncyCastle" Version="1.8.9" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="5.0.1" />    
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Extensions\Resources\ErrorMessages.json" />
   </ItemGroup>
+
+  <Import Project="./../SourceInfo.props"/>
+  <Import Project="./../PackageInfo.props"/>
   
 </Project>

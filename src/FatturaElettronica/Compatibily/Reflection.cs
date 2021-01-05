@@ -38,6 +38,11 @@ namespace System.Reflection
         {
             return type.GetMethods();
         }
+
+        public static PropertyInfo GetRuntimeProperty(this Type type, string name)
+        {
+            return type.GetProperty(name);
+        }
     }
 
 }

@@ -43,7 +43,7 @@ namespace FatturaElettronica.Test.Ordinaria
         public void NaturaValidateAgainstError00420()
         {
             Challenge.EsigibilitaIVA = "S";
-            Challenge.Natura = "N6";
+            Challenge.Natura = "N6.1";
             Validator.ShouldHaveValidationErrorFor(x => x.Natura, Challenge).WithErrorCode("00420");
 
             Challenge.EsigibilitaIVA = "I";
@@ -74,7 +74,7 @@ namespace FatturaElettronica.Test.Ordinaria
         }
 
         [TestMethod]
-        public void RiferimentoNormativoIsOptional()
+        public void RiferimentoNormativoIsRequiredWhenNaturaHasValue()
         {
             AssertOptional(x => x.RiferimentoNormativo);
         }
@@ -90,19 +90,19 @@ namespace FatturaElettronica.Test.Ordinaria
         {
             AssertMustBeLatin1Supplement(x => x.RiferimentoNormativo);
         }
-        
+
         [TestMethod]
         public void SpeseAccessorie()
         {
             AssertDecimalType(x => x.SpeseAccessorie, 2, 13);
         }
-        
+
         [TestMethod]
         public void ImponibileImporto()
         {
             AssertDecimalType(x => x.ImponibileImporto, 2, 13);
         }
-        
+
         [TestMethod]
         public void Arrotondamento()
         {

@@ -4,6 +4,7 @@ using System.Xml;
 using FatturaElettronica.Defaults;
 using FatturaElettronica.Extensions;
 using FatturaElettronica.Ordinaria;
+using Newtonsoft.Json;
 using Org.BouncyCastle.Cms;
 using BaseClassSerializable = FatturaElettronica.Core.BaseClassSerializable;
 
@@ -113,6 +114,12 @@ namespace FatturaElettronica
             }
 
             return CreateInstanceFromXmlSigned(new MemoryStream(converted), validateSignature);
+        }
+
+        protected override void ReadAndHandleXmlStartElement(XmlReader r)
+        {
+            SistemaEmittente = r.GetAttribute("SistemaEmittente");
+            base.ReadAndHandleXmlStartElement(r);
         }
 
         public string SistemaEmittente { get; set; }
