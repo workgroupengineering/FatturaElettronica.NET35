@@ -130,6 +130,9 @@ jobs:
         git config --global user.name "$(gituser)"
         git tag -f -m "Alignment with the official version $(version)" $(version)
         git push origin $(version) -f
+      displayName: 'Tag Release'
+    - script: dotnet nuget add source $(PackagesSource) -n WE -u $(nugetuser) -p $(nugetpassword) --store-password-in-clear-text
+      displayName: 'Add nuget source'
     - task: GitHubRelease@1
       inputs:
         gitHubConnection: 'github.com_workgroupengineering'
@@ -143,3 +146,5 @@ jobs:
         assets: '$(packSource)/*'
         isPreRelease: $(isPreRelease)
         addChangeLog: false
+    - script: dotnet nuget push '$(packSource)/*' --api-key $(nugetpassword) --source 'WE'
+      displayName: 'Publish nuget Package'
