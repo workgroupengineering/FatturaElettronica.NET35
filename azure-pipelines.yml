@@ -35,7 +35,6 @@ jobs:
     inputs:
       nuGetServiceConnections: 'WEPackages'
       forceReinstallCredentialProvider: true
-  - script: dotnet nuget add source https://api.nuget.org/v3/index.json -n nuget.org
   - script: dotnet nuget add source $(PackagesSource) -n WE
   - script: dotnet restore ./src/FatturaElettronica.sln
     displayName: 'Restore Remote packages'
