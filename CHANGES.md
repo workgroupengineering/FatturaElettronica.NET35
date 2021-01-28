@@ -6,6 +6,17 @@ In Development
 
 - hic sunt leones
 
+v 3.1.1
+-------
+
+Released on January 25, 2021
+
+- Convalida `TipoResa` allineata a specifiche Incoterms 2020 ([#313][313])
+- Validazione `CAP`: deve contenere solo valori numerici ([#310][310])
+
+[313]: https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/313
+[310]: https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/310
+
 v 3.1.0
 -------
 
