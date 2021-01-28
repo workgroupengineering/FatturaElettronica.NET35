@@ -26,16 +26,8 @@ jobs:
         sudo apt-get -yq install mono-devel
     displayName: 'Installing mono'
     condition: eq(variables['imageName'],'ubuntu-16.04')
-  #- pwsh: |
-  #    $xml = "<?xml version=""1.0"" encoding=""utf-8""?>`r`n    <configuration>`r`n       <packageSources>`r`n        <add key=""nuget.org"" value=""https://api.nuget.org/v3/index.json"" protocolVersion=""3"" />`r`n        <add key=""we"" value=""${env:PACKAGESSOURCE}"" />`r`n      </packageSources>`r`n    </configuration>"
-  #    $xml | Out-File -FilePath (Join-Path "$(System.DefaultWorkingDirectory)" 'nuget.config')
-  #    Write-Host $xml
-  #  displayName: 'Make Nuget Packages config'
-  - task: NuGetAuthenticate@0
-    inputs:
-      nuGetServiceConnections: 'WEPackages'
-      forceReinstallCredentialProvider: true
-  - script: dotnet nuget add source $(PackagesSource) -n WE
+  - script: dotnet nuget add source $(PackagesSource) -n WE -u $(nugetuser) -p $(nugetpassword)
+    displayName: 'Add nuget source'
   - script: dotnet restore ./src/FatturaElettronica.sln
     displayName: 'Restore Remote packages'
   - task: DotNetCoreCLI@2
