@@ -97,7 +97,7 @@ jobs:
           $_ -match $regex
           if ($Matches){
             $Version=$Matches.Version
-            $officialChangesUrl="https://github.com/FatturaElettronica/FatturaElettronica.NET/blob/master/CHANGES.md#v$($Matches.Major)$($Matches.Minor)" 
+            $officialChangesUrl="https://github.com/FatturaElettronica/FatturaElettronica.NET/blob/master/CHANGES.md#v-$($Matches.Major)$($Matches.Minor)" 
             $officialReleaseUrl="https://github.com/FatturaElettronica/FatturaElettronica.NET/releases/tag/v$($Matches.Major).$($Matches.Minor)"
             
             
