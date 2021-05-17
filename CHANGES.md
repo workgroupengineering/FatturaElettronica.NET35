@@ -6,6 +6,43 @@ In Development
 
 - hic sunt leones
 
+v 3.1.5
+-------
+
+Released on May 14, 2021
+
+- Risolo problema deserializzazione Json per la classe `Allegati` ([#344][344])
+
+[344]: https://github.com/FatturaElettronica/FatturaElettronica.NET/pull/344
+
+v 3.1.4
+-------
+
+Released on March 21, 2021 - Codename 'Spring'
+
+- Fix: il codice per Irlanda del Nord è `XI`, non `IX` ([#314][314])
+
+v 3.1.3
+-------
+
+Released on March 19, 2021
+
+- Aggiunto supporto per il valore `IX` (Irlanda del Nord) al campo `IdPaese` ([#314][314])
+  
+ [314]: https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/314
+
+v 3.1.2
+-------
+
+Released on February 20, 2021
+
+- Rimosso warning di obsolescenza in preparazione per FluentValidation 10 ([#321][321])
+- Risolto problema di compatibilità con FluentValidation 9.5.1 ([#320][320])
+- Aggiornata dipendenza FluentValidation a 9.5.1
+
+[321]: https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/321
+[320]: https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/320
+
 v 3.1.1
 -------
 

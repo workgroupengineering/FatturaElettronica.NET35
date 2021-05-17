@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup Label="Common">
-    <PackageReference Include="FluentValidation.NET35" Version="9.3.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />       
+    <PackageReference Include="FluentValidation.NET35" Version="9.5.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />       
   </ItemGroup>
 
   <ItemGroup Label="Net35" Condition="$(TargetFramework) == 'net35'">
