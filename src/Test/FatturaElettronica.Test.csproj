@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0;net35</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net35</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -9,7 +9,7 @@
   <ItemGroup Label="Common">
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
   </ItemGroup>
-
+  
   <ItemGroup Label="net35" Condition="'$(TargetFramework)'=='net35'">    
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1">

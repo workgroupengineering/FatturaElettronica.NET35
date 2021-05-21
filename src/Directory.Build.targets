@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<Project>
+  <PropertyGroup Condition="'$(IsTestProject)' == 'true' and '$(CI)' == 'true'">
+    <VSTestLogger>trx%3bLogFileName=$(MSBuildProjectName).trx</VSTestLogger>
+    <VSTestResultsDirectory>$(MSBuildThisFileDirectory)../TestResults/$(TargetFramework)</VSTestResultsDirectory>
+  </PropertyGroup>
+</Project>

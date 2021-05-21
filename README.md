@@ -2,6 +2,8 @@
 
 [![Build Status](https://dev.azure.com/workgroupengineering/workgroupengineering/_apis/build/status/workgroupengineering.FatturaElettronica.NET35?branchName=net_35)](https://dev.azure.com/workgroupengineering/workgroupengineering/_build/latest?definitionId=3&branchName=net_35)
 
+[![Build Status GitHub Actions](https://github.com/workgroupengineering/FatturaElettronica.NET35/actions/workflows/CI.yml/badge.svg)](https://github.com/workgroupengineering/FatturaElettronica.NET35/actions/workflows/CI.yml)
+
 Questa è una versione non ufficiale, la versione ufficiale si trova **[qui](https://github.com/FatturaElettronica/FatturaElettronica.NET)**.
 
 La differenze rispetto alla build ufficiale sono:
@@ -11,7 +13,6 @@ La differenze rispetto alla build ufficiale sono:
 
 Il motivo che ci ha spinto alla creazione di questa fork, e perché abbiamo la necessità di mantenere un vecchio software legato ad una libreria che non è compatibile con versioni del .NET Framework superiori alla 3.5. Prima di procedere a questo fork abbiamo creato un **[PR](https://github.com/FatturaElettronica/FatturaElettronica.Core/pull/9)** che introduceva il supporto al .NET Framework 3.5, ma per comprensibili motivi lo sviluppatore non ha voluto integrarla. Avremmo potuto scegliere di svilupparla privatamente, ma nello spirito dell'open source abbiamo deciso di condividerla con tutti.
 Vi preghiamo si supportare il progetto **[originale](https://github.com/FatturaElettronica/FatturaElettronica.NET)** perché senza di esso questa fork non avrebbe avuto vita.
-
 
 ## Status della verisone ufficiale
 
