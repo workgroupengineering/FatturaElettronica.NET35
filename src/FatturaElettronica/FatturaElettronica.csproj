@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Common">
-    <PackageReference Include="FluentValidation.NET35" Version="9.5.1" />
+    <PackageReference Include="FluentValidation.NET35" Version="9.5.4" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />       
   </ItemGroup>
 
