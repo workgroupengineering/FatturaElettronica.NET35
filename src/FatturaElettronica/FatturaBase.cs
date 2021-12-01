@@ -4,7 +4,6 @@ using System.Xml;
 using FatturaElettronica.Defaults;
 using FatturaElettronica.Extensions;
 using FatturaElettronica.Ordinaria;
-using Newtonsoft.Json;
 using Org.BouncyCastle.Cms;
 using BaseClassSerializable = FatturaElettronica.Core.BaseClassSerializable;
 
@@ -53,7 +52,7 @@ namespace FatturaElettronica
         {
             FatturaBase ret;
             using (var r = XmlReader.Create(stream,
-                new XmlReaderSettings
+                new()
                 {
                     IgnoreWhitespace = true, IgnoreComments = true, IgnoreProcessingInstructions = true
                 }))
@@ -75,7 +74,7 @@ namespace FatturaElettronica
             }
 
             using (var r = XmlReader.Create(stream,
-                new XmlReaderSettings
+                new()
                 {
                     IgnoreWhitespace = true, IgnoreComments = true, IgnoreProcessingInstructions = true
                 }))

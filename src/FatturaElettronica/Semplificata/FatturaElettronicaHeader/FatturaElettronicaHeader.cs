@@ -1,5 +1,4 @@
 ﻿using System.Xml;
-using FatturaElettronica.Common;
 using BaseClassSerializable = FatturaElettronica.Core.BaseClassSerializable;
 
 namespace FatturaElettronica.Semplificata.FatturaElettronicaHeader
@@ -11,9 +10,9 @@ namespace FatturaElettronica.Semplificata.FatturaElettronicaHeader
         /// </summary>
         public FatturaElettronicaHeader()
         {
-            DatiTrasmissione = new DatiTrasmissione.DatiTrasmissione();
-            CedentePrestatore = new CedentePrestatore.CedentePrestatore();
-            CessionarioCommittente = new CessionarioCommittente.CessionarioCommittente();
+            DatiTrasmissione = new();
+            CedentePrestatore = new();
+            CessionarioCommittente = new();
         }
         public FatturaElettronicaHeader(XmlReader r) : base(r) { }
 

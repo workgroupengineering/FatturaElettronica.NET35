@@ -1,5 +1,6 @@
 ﻿using System.Xml;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
 
 namespace FatturaElettronica.Ordinaria.FatturaElettronicaHeader
 {
@@ -10,12 +11,12 @@ namespace FatturaElettronica.Ordinaria.FatturaElettronicaHeader
         /// </summary>
         public FatturaElettronicaHeader()
         {
-            DatiTrasmissione = new DatiTrasmissione.DatiTrasmissione();
-            CedentePrestatore = new CedentePrestatore.CedentePrestatore();
-            Rappresentante = new RappresentanteFiscale.RappresentanteFiscale();
-            CessionarioCommittente = new CessionarioCommittente.CessionarioCommittente();
+            DatiTrasmissione = new();
+            CedentePrestatore = new();
+            Rappresentante = new();
+            CessionarioCommittente = new();
             TerzoIntermediarioOSoggettoEmittente =
-                new TerzoIntermediarioOSoggettoEmittente.TerzoIntermediarioOSoggettoEmittente();
+                new();
         }
 
         public FatturaElettronicaHeader(XmlReader r) : base(r)
@@ -43,6 +44,7 @@ namespace FatturaElettronica.Ordinaria.FatturaElettronicaHeader
         /// </summary>
         [Core.DataProperty]
         [XmlElement(ElementName = "RappresentanteFiscale")]
+        [JsonProperty(PropertyName = "RappresentanteFiscale")]
         public RappresentanteFiscale.RappresentanteFiscale Rappresentante { get; set; }
 
         /// <summary>

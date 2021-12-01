@@ -42,11 +42,12 @@ namespace FatturaElettronica.Test.Ordinaria
         public void EmailMustBeValid()
         {
             Challenge.Email = "not really";
-            Validator.ShouldHaveValidationErrorFor(x => x.Email, Challenge);
-            Challenge.Email = "not@really";
-            Validator.ShouldHaveValidationErrorFor(x => x.Email, Challenge);
+            var result = Validator.TestValidate(Challenge);
+            result.ShouldHaveValidationErrorFor(x => x.Email);
+            
             Challenge.Email = "maybe@we.can";
-            Validator.ShouldNotHaveValidationErrorFor(x => x.Email, Challenge);
+            result = Validator.TestValidate(Challenge);
+            result.ShouldNotHaveValidationErrorFor(x => x.Email);
         }
     }
 }

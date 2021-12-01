@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using FatturaElettronica.Tabelle;
+﻿using FatturaElettronica.Tabelle;
 using FluentValidation;
 
 namespace FatturaElettronica.Validators
@@ -28,7 +27,7 @@ namespace FatturaElettronica.Validators
                 .When(x => !string.IsNullOrEmpty(x.Provincia));
             RuleFor(id => id.Nazione)
                 .NotEmpty()
-                .SetValidator(new IsValidValidator<IdPaese>());
+                .SetValidator(new IsValidValidator<T, string, IdPaese>());
         }
     }
 }

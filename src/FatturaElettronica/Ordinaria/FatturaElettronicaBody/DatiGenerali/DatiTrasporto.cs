@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Xml;
-using FatturaElettronica.Common;
 using BaseClassSerializable = FatturaElettronica.Core.BaseClassSerializable;
 
 namespace FatturaElettronica.Ordinaria.FatturaElettronicaBody.DatiGenerali
@@ -15,8 +14,8 @@ namespace FatturaElettronica.Ordinaria.FatturaElettronicaBody.DatiGenerali
         /// </summary>
         public DatiTrasporto()
         {
-            DatiAnagraficiVettore = new DatiAnagraficiVettore();
-            IndirizzoResa = new IndirizzoResa();
+            DatiAnagraficiVettore = new();
+            IndirizzoResa = new();
         }
         public DatiTrasporto(XmlReader r) : base(r) { }
 

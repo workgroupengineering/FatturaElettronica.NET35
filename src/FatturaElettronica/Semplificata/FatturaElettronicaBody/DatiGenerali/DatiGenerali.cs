@@ -1,6 +1,4 @@
-﻿using FatturaElettronica.Common;
-using System.Collections.Generic;
-using System.Xml;
+﻿using System.Xml;
 using BaseClassSerializable = FatturaElettronica.Core.BaseClassSerializable;
 
 namespace FatturaElettronica.Semplificata.FatturaElettronicaBody.DatiGenerali
@@ -15,8 +13,8 @@ namespace FatturaElettronica.Semplificata.FatturaElettronicaBody.DatiGenerali
         /// </summary>
         public DatiGenerali()
         {
-            DatiGeneraliDocumento = new DatiGeneraliDocumento();
-            DatiFatturaRettificata = new DatiFatturaRettificata();
+            DatiGeneraliDocumento = new();
+            DatiFatturaRettificata = new();
         }
         public DatiGenerali(XmlReader r) : base(r) { }
 

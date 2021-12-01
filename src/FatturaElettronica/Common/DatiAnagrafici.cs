@@ -1,5 +1,4 @@
 ﻿using System.Xml;
-using Newtonsoft.Json;
 
 namespace FatturaElettronica.Common
 {
@@ -13,8 +12,8 @@ namespace FatturaElettronica.Common
         /// </summary>
         public DatiAnagrafici()
         {
-            IdFiscaleIVA = new IdFiscaleIVA();
-            Anagrafica = new Anagrafica();
+            IdFiscaleIVA = new();
+            Anagrafica = new();
         }
         public DatiAnagrafici(XmlReader r) : base(r) { }
 

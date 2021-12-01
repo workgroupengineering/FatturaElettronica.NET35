@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
-using FatturaElettronica.Common;
 using BaseClassSerializable = FatturaElettronica.Core.BaseClassSerializable;
 
 namespace FatturaElettronica.Ordinaria.FatturaElettronicaBody.DatiBeniServizi
@@ -16,8 +15,8 @@ namespace FatturaElettronica.Ordinaria.FatturaElettronicaBody.DatiBeniServizi
         /// </summary>
         public DatiBeniServizi()
         {
-            DettaglioLinee = new List<DettaglioLinee>();
-            DatiRiepilogo = new List<DatiRiepilogo>();
+            DettaglioLinee = new();
+            DatiRiepilogo = new();
         }
         public DatiBeniServizi(XmlReader r) : base(r) { }
 

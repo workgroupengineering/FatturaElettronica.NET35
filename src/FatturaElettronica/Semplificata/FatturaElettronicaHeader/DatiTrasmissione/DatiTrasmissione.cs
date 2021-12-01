@@ -1,5 +1,4 @@
-﻿using FatturaElettronica.Common;
-using System.Xml;
+﻿using System.Xml;
 using BaseClassSerializable = FatturaElettronica.Core.BaseClassSerializable;
 
 namespace FatturaElettronica.Semplificata.FatturaElettronicaHeader.DatiTrasmissione
@@ -17,7 +16,7 @@ namespace FatturaElettronica.Semplificata.FatturaElettronicaHeader.DatiTrasmissi
         /// </summary>
         public DatiTrasmissione()
         {
-            IdTrasmittente = new IdTrasmittente();
+            IdTrasmittente = new();
         }
         public DatiTrasmissione(XmlReader r) : base(r) { }
 

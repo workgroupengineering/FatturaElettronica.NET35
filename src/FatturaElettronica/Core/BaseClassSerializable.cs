@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -24,7 +23,7 @@ namespace FatturaElettronica.Core
         /// </summary>
         protected BaseClassSerializable()
         {
-            XmlOptions = new XmlOptions { DateTimeFormat = "yyyy-MM-dd", DecimalFormat = "0.00######" };
+            XmlOptions = new() { DateTimeFormat = "yyyy-MM-dd", DecimalFormat = "0.00######" };
         }
 
         protected BaseClassSerializable(XmlReader r)
@@ -34,7 +33,7 @@ namespace FatturaElettronica.Core
 
         protected XmlOptions XmlOptions { get; set; }
 
-        private readonly Stack<JsonProperty> _stack = new Stack<JsonProperty>();
+        private readonly Stack<JsonProperty> _stack = new();
 
         /// <summary>
         /// Deserializes the current BusinessObject from a json stream.
@@ -71,7 +70,13 @@ namespace FatturaElettronica.Core
 
                                 if (objectType.IsGenericList())
                                 {
-                                    elementType = objectType.GetTypeInfo().GenericTypeArguments.Single();
+                                    elementType = objectType.GetTypeInfo()
+#if NET35
+                                        .GetGenericArguments()
+#else
+                                        .GenericTypeArguments
+#endif
+                                        .Single();
 
                                     var newObject = Activator.CreateInstance(elementType);
 
@@ -87,7 +92,7 @@ namespace FatturaElettronica.Core
                                     }
 
 
-                                    current = new JsonProperty(newObject);
+                                    current = new(newObject);
                                 }
                                 else
                                 {
@@ -96,12 +101,12 @@ namespace FatturaElettronica.Core
                                             $"Unexpected property type {objectType.FullName}",
                                             r);
 
-                                    current = new JsonProperty(current.Child.GetValue(current.Value, null));
+                                    current = new(current.Child.GetValue(current.Value, null));
                                 }
                             }
                         }
                         else
-                            current = new JsonProperty(this);
+                            current = new(this);
 
                         _stack.Push(current);
 
@@ -151,10 +156,10 @@ namespace FatturaElettronica.Core
                             var clear = objectType.GetMethod("Clear");
                             if (clear != null) clear.Invoke(value, null);
 
-                            current = new JsonProperty(current.Child, value);
+                            current = new(current.Child, value);
                         }
                         else
-                            current = new JsonProperty(this);
+                            current = new(this);
 
                         _stack.Push(current);
 
@@ -188,7 +193,13 @@ namespace FatturaElettronica.Core
 
                             if (current.Value.GetType().IsGenericList())
                             {
-                                elementType = objectType.GetTypeInfo().GenericTypeArguments.Single();
+                                elementType = objectType.GetTypeInfo()
+#if NET35
+                                        .GetGenericArguments()
+#else
+                                        .GenericTypeArguments
+#endif
+                                        .Single();
 
                                 var add = objectType?.GetMethod("Add");
                                 var value = Cast(elementType, r.Value);
@@ -468,8 +479,13 @@ namespace FatturaElettronica.Core
         /// <param name="r">Active XML stream reader.</param>
         private static void ReadXmlList(object propertyValue, Type propertyType, string elementName, XmlReader r)
         {
-            var argumentType = propertyType.GetTypeInfo().GenericTypeArguments.Single();
-
+            var argumentType = propertyType.GetTypeInfo()                
+#if NET35
+                .GetGenericArguments()
+#else
+                .GenericTypeArguments
+#endif
+                .Single();
             // note that the 'canonical' call to GetRuntimeMethod returns null for some reason,
             // see http://stackoverflow.com/questions/21307845/runtimereflectionextensions-getruntimemethod-does-not-work-as-expected
             //var method = propertyType.GetRuntimeMethod("Clear", new[] { propertyType });

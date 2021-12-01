@@ -1,5 +1,4 @@
 ﻿using System.Xml;
-using FatturaElettronica.Common;
 using BaseClassSerializable = FatturaElettronica.Core.BaseClassSerializable;
 
 namespace FatturaElettronica.Semplificata.FatturaElettronicaHeader.CessionarioCommittente
@@ -14,8 +13,8 @@ namespace FatturaElettronica.Semplificata.FatturaElettronicaHeader.CessionarioCo
         /// </summary>
         public CessionarioCommittente()
         {
-            IdentificativiFiscali = new IdentificativiFiscali();
-            AltriDatiIdentificativi = new AltriDatiIdentificativi();
+            IdentificativiFiscali = new();
+            AltriDatiIdentificativi = new();
         }
         public CessionarioCommittente(XmlReader r) : base(r) { }
 

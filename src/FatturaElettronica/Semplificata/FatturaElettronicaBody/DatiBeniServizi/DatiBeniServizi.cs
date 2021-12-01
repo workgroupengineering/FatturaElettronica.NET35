@@ -1,5 +1,4 @@
 ﻿using System.Xml;
-using FatturaElettronica.Common;
 using BaseClassSerializable = FatturaElettronica.Core.BaseClassSerializable;
 
 namespace FatturaElettronica.Semplificata.FatturaElettronicaBody.DatiBeniServizi
@@ -14,7 +13,7 @@ namespace FatturaElettronica.Semplificata.FatturaElettronicaBody.DatiBeniServizi
         /// </summary>
         public DatiBeniServizi()
         {
-            DatiIVA = new DatiIVA();
+            DatiIVA = new();
         }
         public DatiBeniServizi(XmlReader r) : base(r) { }
 

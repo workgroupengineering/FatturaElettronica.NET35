@@ -4,27 +4,30 @@ using System.Linq;
 #endif
 using System.Collections.Generic;
 using FatturaElettronica.Tabelle;
+using FluentValidation;
 using FluentValidation.Validators;
 
 namespace FatturaElettronica.Validators
 {
-    public class IsValidValidator<T> : PropertyValidator where T : Tabella, new()
+    public class IsValidValidator<T, TProperty, TTabella> : PropertyValidator<T, TProperty>
+        where TTabella : Tabella, new()
     {
-        private static readonly Lazy<T> DomainObjectLazy = new Lazy<T>(() => new T());
+        private static readonly Lazy<TTabella> DomainObjectLazy = new(() => new());
 
-        protected override string GetDefaultMessageTemplate()
+        protected override string GetDefaultMessageTemplate(string errorCode)
         {
             return "'{PropertyName}' valori accettati: {AcceptedValues}";
         }
 
-        protected override bool IsValid(PropertyValidatorContext context)
+        public override bool IsValid(ValidationContext<T> context, TProperty value)
         {
 #if NET35
             context.MessageFormatter.AppendArgument("AcceptedValues", string.Format(string.Join(", ", Domain.ToArray())));
 #else
             context.MessageFormatter.AppendArgument("AcceptedValues", string.Format(string.Join(", ", Domain)));
 #endif
-            if (context.PropertyValue is string codice)
+
+            if (value is string codice)
                 return Domain.Contains(codice);
 
             return false;
@@ -34,5 +37,7 @@ namespace FatturaElettronica.Validators
         {
             get { return DomainObjectLazy.Value.Codici; }
         }
+
+        public override string Name => "IsValidValidator";
     }
 }

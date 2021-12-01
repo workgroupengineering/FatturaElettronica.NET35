@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using FatturaElettronica.Common;
 using FatturaElettronica.Defaults;
 
 namespace FatturaElettronica.Semplificata
@@ -8,8 +7,8 @@ namespace FatturaElettronica.Semplificata
     {
         public FatturaSemplificata()
         {
-            FatturaElettronicaHeader = new FatturaElettronicaHeader.FatturaElettronicaHeader();
-            FatturaElettronicaBody = new List<FatturaElettronicaBody.FatturaElettronicaBody>();
+            FatturaElettronicaHeader = new();
+            FatturaElettronicaBody = new();
         }
 
         public static FatturaSemplificata CreateInstance(Instance formato)
@@ -21,7 +20,7 @@ namespace FatturaElettronica.Semplificata
             {
                 case Instance.Semplificata:
                     fatturaSemplificata.FatturaElettronicaHeader.DatiTrasmissione.FormatoTrasmissione = FormatoTrasmissione.Semplificata;
-                    fatturaSemplificata.FatturaElettronicaHeader.DatiTrasmissione.CodiceDestinatario = new string('0', 7);
+                    fatturaSemplificata.FatturaElettronicaHeader.DatiTrasmissione.CodiceDestinatario = new('0', 7);
                     break;
             }
 
