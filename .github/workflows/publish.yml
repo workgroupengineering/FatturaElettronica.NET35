@@ -1,0 +1,122 @@
+name: 'Publish'
+on:
+  workflow_run:
+    workflows: ['Build']                     # runs after CI workflow
+    branches: [net_35]
+    types:
+      - completed
+jobs:
+  Pack:
+    runs-on: windows-latest
+    outputs:
+      version: ${{ steps.extractversion.outputs.version }}
+      changesurl: ${{ steps.extractversion.outputs.changesurl }}
+      suffix: ${{ steps.extractversion.outputs.suffix }}
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET Core 5.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+        source-url: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+      env:
+        NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}} 
+
+    - name: Install dependencies
+      run: dotnet restore ./src/
+
+    - name: Build
+      run: dotnet build "./src/FatturaElettronica/FatturaElettronica.csproj" --configuration Release
+
+    - name: Pack
+      run: dotnet pack "./src/FatturaElettronica/FatturaElettronica.csproj" --configuration Release -o ./Packages/
+
+    - name: Extract Version
+      id: extractversion
+      shell: pwsh
+      run: |
+        $dest = "./Packages/*"
+        Write-Host "Start enum of $($dest)"
+        $i = 0
+        $items = Get-ChildItem -Path $dest
+        $regex = 'FatturaElettronica\.NET35\.(?<Version>(?<Major>\d+)\.(?<Minor>\d+)\.(?<Patch>\d+)(?:-(?<Suffix>.*))?)\.nupkg'
+        $items | ForEach-Object {
+          Write-Host  $_
+          $_ -match $regex
+          if ($Matches){
+            $Version=$Matches.Version
+            $officialChangesUrl="https://github.com/FatturaElettronica/FatturaElettronica.NET/blob/master/CHANGES.md#v-$($Matches.Major)$($Matches.Minor)$($Matches.Patch)" 
+            
+            
+            if ($Matches.Suffix){
+              Write-Host "##vso[task.setvariable variable=isPreRelease;]$true"
+              $Suffix=$Matches.Suffix
+              $clearedSuffix =  $Suffix -replace "\.", "" 
+              $officialChangesUrl="$officialChangesUrl-$clearedSuffix"
+            }
+
+            Write-Host "::set-output name=version::$Version"
+            Write-Host "::set-output name=changesurl::$officialChangesUrl"
+            Write-Host "::set-output name=suffix::$clearedSuffix"
+            exit 0
+          }
+          $i=$i+1
+          Write-Host "::error ::Package not founded."
+          exit 100
+        }
+        Write-Host "End enum $i"
+
+    - uses: actions/upload-artifact@v2  # upload test results
+      name: Packages Artficats
+      if: success()
+      with:
+          name: Packages
+          path: ./Packages/*.nupkg
+  Release:
+    runs-on: ubuntu-latest
+    needs: [Pack]
+    if: success() # && needs.pack.outputs.prerelease == 'false'
+    env:
+      NUGET_AUTH_TOKEN: ${{ secrets.NUGET_AUTH_TOKEN }}
+      SOURCE_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+      prerelease: ${{ needs.pack.outputs.suffix != '' }}
+    steps:
+      - name: Download NuGet Packages
+        uses: actions/download-artifact@v2
+        id: download
+        with:
+          name: Packages
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        id: create_release
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+            tag_name: ${{ needs.pack.outputs.version }}
+            release_name: Backport of FatturaElettronica.NET v${{ needs.pack.outputs.version }} on .NET Framework 3.5
+            prerelease: ${{ env.prerelease }}
+            body: |
+              Changes logs official version [v${{ needs.pack.outputs.version }}](${{ needs.pack.outputs.changesurl }})
+              
+      - name: Upload Release Assets
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path:  ${{ steps.download.outputs.download-path }}/FatturaElettronica.NET35.${{ needs.pack.outputs.version }}.nupkg
+          asset_name: /FatturaElettronica.NET35.${{ needs.pack.outputs.version }}.nupkg
+          asset_content_type: application/zip               
+
+      - name: NuGet Push
+        run: dotnet nuget push -s ${{ env.SOURCE_URL }} --api-key ${{ env.NUGET_AUTH_TOKEN }} ${{ steps.download.outputs.download-path }}/FatturaElettronica.NET35.${{ needs.pack.outputs.version }}.nupkg
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.NUGET_AUTH_TOKEN }}
+          SOURCE_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+
+

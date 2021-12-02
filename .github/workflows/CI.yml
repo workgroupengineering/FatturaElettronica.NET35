@@ -6,19 +6,20 @@ on:
       - net_35
 
 jobs:
-  build:
-
+  Cross_Build:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macOS-latest, windows-latest]
+        os: [ubuntu-latest, macOS-latest]
+        configuration: [Debug,Release]
 
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core 3.1.x
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '3.1.x'          
+        dotnet-version: '3.1.x'
     - name: Setup .NET Core 5.x
       uses: actions/setup-dotnet@v1
       with:
@@ -26,16 +27,69 @@ jobs:
         source-url: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
       env:
         NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}} 
+
     - name: Install dependencies
       run: dotnet restore ./src/
-    - name: Build
-      run: dotnet build ./src/ --configuration Release --no-restore
-    - name: Test
-      run: dotnet test ./src/ --verbosity normal  --no-restore
-    - name: Test Report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()    # run this step even if previous step failed
+
+    - name: Build (${{ matrix.configuration }})
+      run: dotnet build ./src/ --configuration ${{ matrix.configuration }} --no-restore
+      
+    - name: Run tests (${{ matrix.configuration }})
+      run: dotnet test ./src/ --verbosity normal -c ${{ matrix.configuration }} -f netcoreapp3.1 --no-build --logger "trx;LogFileName=${{ matrix.os }}-${{ matrix.configuration }}-${{ matrix.target }}.trx" --results-directory ./TestResults
+      
+    - uses: actions/upload-artifact@v2  # upload test results
+      name: Upload test results
+      if: success() || failure()        # run this step even if previous step failed
       with:
-        name: Test on ${{ matrix.os }}
-        reporter: dotnet-trx
-        path: ./TestResults/*/*.trx
+          name: test-results
+          path: ./TestResults/*.trx
+
+  Windows_Build:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [Debug,Release]
+        target: [net35, netcoreapp3.1]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET Core
+      if: matrix.target == 'netcoreapp3.1'
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.x'
+        
+    - name: Setup .NET Core 5.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+        source-url: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+      env:
+        NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}} 
+      
+    - name: Setup MSBuild Path
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Setup VSTest Path
+      uses: darenm/Setup-VSTest@v1
+
+    - name: Restore test dependencies
+      run: dotnet restore src\FatturaElettronica.sln
+      
+    - name: Build ${{ matrix.target }} (${{ matrix.configuration }})
+      run: msbuild src\test\FatturaElettronica.Test.csproj /p:Configuration=${{ matrix.configuration }}  /p:TargetFramework=${{ matrix.target }}
+      
+    
+    - name: Run VStest ${{ matrix.target }} (${{ matrix.configuration }})
+      run: vstest.console src\test\bin\${{ matrix.configuration }}\${{ matrix.target }}\FatturaElettronica.Test.dll --Logger:"trx;LogFileName=${{ matrix.os }}-${{ matrix.configuration }}-${{ matrix.target }}.trx" --ResultsDirectory:./TestResults 
+            
+    - uses: actions/upload-artifact@v2  # upload test results
+      name: Upload test results
+      if: success() || failure()        # run this step even if previous step failed
+      with:
+          name: test-results
+          path: ./TestResults/*.trx
+

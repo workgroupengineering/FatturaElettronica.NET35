@@ -1,0 +1,17 @@
+name: 'Test Report'
+on:
+  workflow_run:
+    workflows: ['Build']                     # runs after CI workflow
+    types:
+      - completed
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: workgroupengineering/test-reporter@v1.4.4-exp
+      with:
+        artifact: test-results            # artifact name
+        name: FatturaElettronica.NET35 Tests      # Name of the check run which will be created
+        path: '*.trx'                     # Path to test results (inside artifact .zip)
+        reporter: dotnet-trx
+        only-summary: true
