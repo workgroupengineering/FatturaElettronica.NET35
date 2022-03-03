@@ -1,5 +1,5 @@
-﻿using System.Text.Json.Serialization;
-using System.Xml;
+﻿using System.Xml;
+using Newtonsoft.Json;
 
 namespace FatturaElettronica.Common
 {

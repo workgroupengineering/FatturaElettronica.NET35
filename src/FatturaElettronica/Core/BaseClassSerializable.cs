@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Text.Json;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
+using Formatting = Newtonsoft.Json.Formatting;
 
 namespace FatturaElettronica.Core
 {
@@ -39,9 +40,11 @@ namespace FatturaElettronica.Core
         /// </summary>
         /// <param name="r">Active json stream reader</param>
         /// <remarks>Side effects on parse handling</remarks>
-        public virtual void FromJson(Utf8JsonReader r)
+        public virtual void FromJson(JsonReader r)
         {
             _stack.Clear();
+
+            r.FloatParseHandling = FloatParseHandling.Decimal;
 
             PropertyInfo prop = null;
 
@@ -52,7 +55,7 @@ namespace FatturaElettronica.Core
                 Type elementType;
                 switch (r.TokenType)
                 {
-                    case JsonTokenType.StartObject:
+                    case JsonToken.StartObject:
 
                         current = null;
                         if (_stack.Any())
@@ -67,7 +70,13 @@ namespace FatturaElettronica.Core
 
                                 if (objectType.IsGenericList())
                                 {
-                                    elementType = objectType.GetTypeInfo().GenericTypeArguments.Single();
+                                    elementType = objectType.GetTypeInfo()
+#if NET35
+                                        .GetGenericArguments()
+#else
+                                        .GenericTypeArguments
+#endif
+                                        .Single();
 
                                     var newObject = Activator.CreateInstance(elementType);
 
@@ -81,6 +90,7 @@ namespace FatturaElettronica.Core
                                     {
                                         throw new JsonParseException($"Unexpected element type {elementType}", r);
                                     }
+
 
                                     current = new(newObject);
                                 }
@@ -101,8 +111,7 @@ namespace FatturaElettronica.Core
                         _stack.Push(current);
 
                         break;
-
-                    case JsonTokenType.EndObject:
+                    case JsonToken.EndObject:
 
                         if (_stack.Count > 0)
                             _stack.Pop();
@@ -113,15 +122,14 @@ namespace FatturaElettronica.Core
                             prop = _stack.ElementAt(1).Child;
 
                         break;
-
-                    case JsonTokenType.PropertyName:
+                    case JsonToken.PropertyName:
 
                         if (!_stack.Any())
                             throw new JsonParseException("Malformed JSON", r);
 
                         current = _stack.Peek();
 
-                        var name = r.GetString();
+                        var name = (string)r.Value;
                         prop = GetPropertyInfo((BaseClassSerializable)current.Value, name);
 
                         if (prop == null)
@@ -130,8 +138,7 @@ namespace FatturaElettronica.Core
                         current.Child = prop;
 
                         break;
-
-                    case JsonTokenType.StartArray:
+                    case JsonToken.StartArray:
 
                         current = null;
                         if (_stack.Any())
@@ -158,7 +165,7 @@ namespace FatturaElettronica.Core
 
                         break;
 
-                    case JsonTokenType.EndArray:
+                    case JsonToken.EndArray:
 
                         if (_stack.Count > 0)
                             _stack.Pop();
@@ -169,11 +176,13 @@ namespace FatturaElettronica.Core
                             prop = _stack.ElementAt(1).Child;
 
                         break;
+                    case JsonToken.Integer:
+                    case JsonToken.Float:
+                    case JsonToken.String:
+                    case JsonToken.Boolean:
+                    case JsonToken.Null:
+                    case JsonToken.Date:
 
-                    case JsonTokenType.Number:
-                    case JsonTokenType.String:
-                    case JsonTokenType.True:
-                    case JsonTokenType.False:
                         current = null;
                         if (_stack.Any())
                             current = _stack.Peek();
@@ -184,10 +193,16 @@ namespace FatturaElettronica.Core
 
                             if (current.Value.GetType().IsGenericList())
                             {
-                                elementType = objectType.GetTypeInfo().GenericTypeArguments.Single();
+                                elementType = objectType.GetTypeInfo()
+#if NET35
+                                        .GetGenericArguments()
+#else
+                                        .GenericTypeArguments
+#endif
+                                        .Single();
 
                                 var add = objectType?.GetMethod("Add");
-                                var value = Cast(elementType, r);
+                                var value = Cast(elementType, r.Value);
 
                                 try
                                 {
@@ -200,48 +215,14 @@ namespace FatturaElettronica.Core
                             }
                             else
                             {
-                                var value = Cast(objectType, r);
+                                var value = Cast(objectType, r.Value);
                                 current.Child.SetValue(current.Value, value, null);
                             }
                         }
                         else
                             throw new JsonParseException("Malformed JSON", r);
+
                         break;
-
-                    case JsonTokenType.Null:
-
-                        current = null;
-                        if (_stack.Any())
-                            current = _stack.Peek();
-
-                        if (current != null)
-                        {
-                            objectType = prop?.PropertyType;
-
-                            if (current.Value.GetType().IsGenericList())
-                            {
-                                elementType = objectType.GetTypeInfo().GenericTypeArguments.Single();
-
-                                var add = objectType?.GetMethod("Add");
-
-                                try
-                                {
-                                    if (add != null) add.Invoke(current.Value, null);
-                                }
-                                catch (Exception)
-                                {
-                                    throw new JsonParseException($"Unexpected element type {elementType}", r);
-                                }
-                            }
-                            else
-                            {
-                                current.Child.SetValue(current.Value, null, null);
-                            }
-                        }
-                        else
-                            throw new JsonParseException("Malformed JSON", r);
-                        break;
-
                     default:
                         throw new JsonParseException($"Unexpected token {r.TokenType}", r);
                 }
@@ -252,29 +233,20 @@ namespace FatturaElettronica.Core
         /// Helper method to cast json properties
         /// </summary>
         /// <param name="target">target type</param>
-        /// <param name="r">Active json stream reader</param>
+        /// <param name="value">source value</param>
         /// <returns></returns>
-        private static object Cast(Type target, Utf8JsonReader r)
+        private static object Cast(Type target, object value)
         {
             if (target == typeof(int) || target == typeof(int?))
-                return r.GetInt32();
+                return Convert.ToInt32(value);
 
             if (target == typeof(decimal) || target == typeof(decimal?))
-                return r.GetDecimal();
+                return Convert.ToDecimal(value);
 
-            if (target == typeof(DateTime) || target == typeof(DateTime?))
-                return r.GetDateTime();
+            if (target == typeof(byte[]) && value.GetType().Equals(String.Empty.GetType()))
+                return Convert.FromBase64String((String)value);
 
-            if (target == typeof(string))
-                return r.GetString();
-
-            if (target == typeof(bool))
-                return r.GetBoolean();
-
-            if (target == typeof(byte[]))
-                return r.GetBytesFromBase64();
-
-            return null;
+            return value;
         }
 
         /// <summary>
@@ -320,7 +292,13 @@ namespace FatturaElettronica.Core
         /// <returns>A JSON string representing the class instance.</returns>
         public virtual string ToJson(JsonOptions jsonOptions)
         {
-            var json = JsonSerializer.Serialize(this, GetType(), new JsonSerializerOptions { WriteIndented = jsonOptions == JsonOptions.Indented });
+            var json = JsonConvert.SerializeObject(
+                this, jsonOptions == JsonOptions.Indented ? Formatting.Indented : Formatting.None,
+                new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                    DefaultValueHandling = DefaultValueHandling.Ignore
+                });
             return json;
         }
 
@@ -418,11 +396,9 @@ namespace FatturaElettronica.Core
                         case BaseClassSerializable serializable:
                             serializable.WriteXml(w);
                             break;
-
                         case string s:
                             w.WriteString(s);
                             break;
-
                         default:
                             w.WriteValue(e.Current);
                             break;
@@ -504,8 +480,13 @@ namespace FatturaElettronica.Core
         /// <param name="r">Active XML stream reader.</param>
         private static void ReadXmlList(object propertyValue, Type propertyType, string elementName, XmlReader r)
         {
-            var argumentType = propertyType.GetTypeInfo().GenericTypeArguments.Single();
-
+            var argumentType = propertyType.GetTypeInfo()
+#if NET35
+                .GetGenericArguments()
+#else
+                .GenericTypeArguments
+#endif
+                .Single();
             // note that the 'canonical' call to GetRuntimeMethod returns null for some reason,
             // see http://stackoverflow.com/questions/21307845/runtimereflectionextensions-getruntimemethod-does-not-work-as-expected
             //var method = propertyType.GetRuntimeMethod("Clear", new[] { propertyType });
@@ -539,7 +520,6 @@ namespace FatturaElettronica.Core
         private class JsonProperty
         {
             public PropertyInfo Child { get; set; }
-
             public object Value { get; set; }
 
             public JsonProperty(PropertyInfo property, object value)

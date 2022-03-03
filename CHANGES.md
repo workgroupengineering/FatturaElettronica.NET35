@@ -11,11 +11,9 @@ Released on February 25, 2022
 
 - New: supporto per tag 'Processing Instructions' in de-serializzazione XML ([#367][367])
 - Fix: link rotto alle specifiche techiche ([#362][362])
-- Migrazione a System.Text.Json ([#360][360])
 - Rimosso badge dependabot dal README
 
 [367]: https://github.com/FatturaElettronica/FatturaElettronica.NET/pull/367
-[360]: https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/360
 [362]: https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/362
 
 ## Released
