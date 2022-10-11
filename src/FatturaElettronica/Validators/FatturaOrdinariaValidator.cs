@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FatturaElettronica.Ordinaria;
 using FatturaElettronica.Ordinaria.FatturaElettronicaBody;
 using FluentValidation;
@@ -19,12 +20,12 @@ namespace FatturaElettronica.Validators
             RuleFor(x => x)
                 .Must((fattura, _) => FatturaValidateAgainstError00471(fattura))
                 .WithMessage(
-                    "I valori TD16, TD17, TD18, TD19 e TD20 del tipo documento non ammettono l’indicazione in fattura dello stesso soggetto sia come cedente che come cessionario")
+                    "I valori TD01, TD02, TD03, TD06, TD16, TD17, TD18, TD19, TD20, TD24, TD25 e TD28 del tipo documento non ammettono l’indicazione in fattura dello stesso soggetto sia come cedente che come cessionario")
                 .WithErrorCode("00471");
             RuleFor(x => x)
                 .Must((fattura, _) => FatturaValidateAgainstError00472(fattura))
                 .WithMessage(
-                    "Il tipo documento ‘autofattura per splafonamento’ non ammette l’indicazione in fattura di un cedente diverso dal cessionario")
+                    "I valori TD21 e TD27 del tipo documento non ammettono l’indicazione in fattura di un cedente diverso dal cessionario")
                 .WithErrorCode("00472");
             RuleFor(x => x)
                 .Must((fattura, _) => FatturaValidateAgainstError00473(fattura))
@@ -43,6 +44,16 @@ namespace FatturaElettronica.Validators
                 .WithMessage(
                     "Tutti i valori di natura dell’operazione presenti nelle linee di dettaglio di una fattura o nei dati di cassa previdenziale devono essere presenti anche nei dati di riepilogo")
                 .WithErrorCode("00444");
+            RuleForEach(x => x.FatturaElettronicaBody)
+                .Must((_, body) => BodyValidateAgainstError00401(body))
+                .WithMessage(
+                    "Natura presente a fronte di Aliquota IVA diversa da zero (l’indicazione di un’aliquota IVA diversa da zero qualifica l’operazione come imponibile e quindi non è ammessa la presenza dell’elemento Natura, ad eccezione del caso in cui l’elemento TipoDocumento assume valore TD16)")
+                .WithErrorCode("00401");
+            RuleForEach(x => x.FatturaElettronicaBody)
+                .Must((_, body) => BodyValidateAgainstError00430(body))
+                .WithMessage(
+                    "Natura presente a fronte di Aliquota IVA diversa da zero (l’indicazione di un’aliquota IVA diversa da zero qualifica l’operazione come imponibile e quindi non è ammessa la presenza dell’elemento Natura, ad eccezione del caso in cui l’elemento TipoDocumento assume valore TD16)")
+                .WithErrorCode("00430");
         }
 
         private static bool FatturaValidateAgainstError00475(FatturaOrdinaria fatturaOrdinaria)
@@ -66,7 +77,7 @@ namespace FatturaElettronica.Validators
             if (cedente.IdFiscaleIVA.IdPaese != "IT")
                 return true;
 
-            var tipiDocumento = new[] { "TD17", "TD18", "TD19" };
+            var tipiDocumento = new[] { "TD17", "TD18", "TD19", "TD28" };
 
             return fatturaOrdinaria.FatturaElettronicaBody.All(x =>
                 !tipiDocumento.Contains(x.DatiGenerali.DatiGeneraliDocumento.TipoDocumento));
@@ -137,6 +148,30 @@ namespace FatturaElettronica.Validators
 
             return aliquote.All(aliquota => riepilogo.Contains(aliquota)) &&
                    riepilogo.All(aliquota => aliquote.Contains(aliquota));
+        }
+
+        private bool BodyValidateAgainstError00401(FatturaElettronicaBody body)
+        {
+            if (body.DatiGenerali.DatiGeneraliDocumento.TipoDocumento == "TD16")
+            {
+                return true;
+            }
+
+            return body.DatiBeniServizi.DettaglioLinee.All(x =>
+                x.AliquotaIVA > 0 && string.IsNullOrEmpty(x.Natura) ||
+                x.AliquotaIVA == 0 && !string.IsNullOrEmpty(x.Natura));
+        }
+
+        private bool BodyValidateAgainstError00430(FatturaElettronicaBody body)
+        {
+            if (body.DatiGenerali.DatiGeneraliDocumento.TipoDocumento == "TD16")
+            {
+                return true;
+            }
+
+            return body.DatiBeniServizi.DatiRiepilogo.All(x => 
+                x.AliquotaIVA > 0 && string.IsNullOrEmpty(x.Natura) ||
+                x.AliquotaIVA == 0 && !string.IsNullOrEmpty(x.Natura));
         }
     }
 }

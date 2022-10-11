@@ -2,9 +2,46 @@
 
 ## In Development
 
-- *hic sunt dracones*
-
+- *hic sunt leones*
+ 
 ## Stable
+
+v3.4.4
+------
+
+Released on October 1, 2022
+
+- Fix: errore nella validazione dei controlli 00401 e 00430 introdotto in v3.4.3 ([#384][384])
+
+[384]: https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/384
+
+v3.4.3
+------
+
+Released on October 1, 2022
+
+- Fix: aggiornati i controlli 00401 e 00430 affinchè escludano i documenti TD16 ([#382][382])
+
+[382]: https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/382
+
+v3.4.2
+------
+
+Released on September 27, 2022
+
+- Fix: Aggiornato messaggio di errore per il controllo 00472 ([#381][381])
+
+[381]: https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/381
+
+v 3.4.1
+-------
+
+Released on September 26, 2022
+
+- Fix: correzione segnalazioni Controlli 00471 e 00473 ([#378][378] e [#379][379])
+
+[378]: https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/378
+[379]: https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/379
 
 v 3.4
 -----
