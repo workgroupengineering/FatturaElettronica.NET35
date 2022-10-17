@@ -6,6 +6,19 @@
  
 ## Stable
 
+v 3.4.5
+-------
+
+Released on October 14, 2022
+
+- Fix: controllo 00471; recepite novità introdotte dalle [specifiche v1.8](https://www.fatturapa.gov.it/export/documenti/Elenco-Controlli-versione-1.8.pdf) ([#387][387])
+- Fix: controllo 00476; supporto per Cessionario.IdFiscaleIva non indicato ([#386][386])
+- Fix: controllo 00473; TD28 può essere usato solo se IdPaese del cedente è uguale a "SM" ([#385][385])
+
+[387]: https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/387
+[386]: https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/386
+[385]: https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/385
+
 v3.4.4
 ------
 

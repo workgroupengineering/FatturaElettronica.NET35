@@ -74,13 +74,20 @@ namespace FatturaElettronica.Validators
         {
             var cedente = fatturaOrdinaria.FatturaElettronicaHeader.CedentePrestatore.DatiAnagrafici;
 
+            if (fatturaOrdinaria.FatturaElettronicaBody.Any(x =>
+                    x.DatiGenerali.DatiGeneraliDocumento.TipoDocumento == "TD28") &&
+                cedente.IdFiscaleIVA.IdPaese != "SM")
+                return false;
+
             if (cedente.IdFiscaleIVA.IdPaese != "IT")
                 return true;
 
             var tipiDocumento = new[] { "TD17", "TD18", "TD19", "TD28" };
 
-            return fatturaOrdinaria.FatturaElettronicaBody.All(x =>
+            var success = fatturaOrdinaria.FatturaElettronicaBody.All(x =>
                 !tipiDocumento.Contains(x.DatiGenerali.DatiGeneraliDocumento.TipoDocumento));
+
+            return success;
         }
 
         private static bool FatturaValidateAgainstError00472(FatturaOrdinaria fatturaOrdinaria)
@@ -102,21 +109,17 @@ namespace FatturaElettronica.Validators
 
         private static bool FatturaValidateAgainstError00471(FatturaOrdinaria fatturaOrdinaria)
         {
-            var cedente = fatturaOrdinaria.FatturaElettronicaHeader.CedentePrestatore.DatiAnagrafici;
-            var cessionario =
-                fatturaOrdinaria.FatturaElettronicaHeader.CessionarioCommittente.DatiAnagrafici;
-
-            if (cedente.IdFiscaleIVA?.ToString() != cessionario.IdFiscaleIVA?.ToString())
-                return true;
-            if (cedente.CodiceFiscale != cessionario.CodiceFiscale)
-                return true;
+            var cedente = fatturaOrdinaria.FatturaElettronicaHeader.CedentePrestatore.DatiAnagrafici.IdFiscaleIVA
+                .ToString();
+            var cessionario = fatturaOrdinaria.FatturaElettronicaHeader.CessionarioCommittente.DatiAnagrafici
+                .IdFiscaleIVA.ToString();
 
             var tipiDocumento = new[]
             {
                 "TD01", "TD02", "TD03", "TD06", "TD16", "TD17", "TD18", "TD19", "TD20", "TD24", "TD25", "TD28"
             };
 
-            return fatturaOrdinaria.FatturaElettronicaBody.All(x =>
+            return cedente != cessionario || fatturaOrdinaria.FatturaElettronicaBody.All(x =>
                 !tipiDocumento.Contains(x.DatiGenerali.DatiGeneraliDocumento.TipoDocumento));
         }
 
@@ -169,7 +172,7 @@ namespace FatturaElettronica.Validators
                 return true;
             }
 
-            return body.DatiBeniServizi.DatiRiepilogo.All(x => 
+            return body.DatiBeniServizi.DatiRiepilogo.All(x =>
                 x.AliquotaIVA > 0 && string.IsNullOrEmpty(x.Natura) ||
                 x.AliquotaIVA == 0 && !string.IsNullOrEmpty(x.Natura));
         }
