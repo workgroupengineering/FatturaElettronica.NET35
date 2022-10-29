@@ -6,6 +6,15 @@
  
 ## Stable
 
+v 3.4.6
+-------
+
+Released on October 28, 2022
+
+- Fix: controllo 00472; supporto per ditta individuale che si fattura un prodotto ([#388][388])
+
+[388]: https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/388
+
 v 3.4.5
 -------
 
