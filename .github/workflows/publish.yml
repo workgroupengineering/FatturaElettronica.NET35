@@ -13,12 +13,9 @@ jobs:
       changesurl: ${{ steps.extractversion.outputs.changesurl }}
       suffix: ${{ steps.extractversion.outputs.suffix }}
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-
+    - uses: actions/checkout@v3
     - name: Setup .NET Core 5.x
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 5.0.x
         source-url: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
@@ -26,9 +23,9 @@ jobs:
         NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}} 
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.100
+        dotnet-version: 7.0.x
 
     - name: Install dependencies
       run: dotnet restore ./src/
@@ -116,7 +113,7 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
           asset_path:  ${{ steps.download.outputs.download-path }}/FatturaElettronica.NET35.${{ needs.pack.outputs.version }}.nupkg
           asset_name: /FatturaElettronica.NET35.${{ needs.pack.outputs.version }}.nupkg
-          asset_content_type: application/zip               
+          asset_content_type: application/zip
 
       - name: NuGet Push
         run: dotnet nuget push -s ${{ env.SOURCE_URL }} --api-key ${{ env.NUGET_AUTH_TOKEN }} ${{ steps.download.outputs.download-path }}/FatturaElettronica.NET35.${{ needs.pack.outputs.version }}.nupkg

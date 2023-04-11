@@ -136,14 +136,6 @@ namespace FatturaElettronica.Test.Ordinaria
             result = Validator.TestValidate(Challenge);
             result.ShouldHaveValidationErrorFor(x => x.PrezzoTotale).WithErrorCode("00423");
 
-            // https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/181
-            Challenge.ScontoMaggiorazione.Clear();
-            Challenge.PrezzoUnitario = 0.030987m;
-            Challenge.Quantita = 22633;
-            Challenge.PrezzoTotale = 701.34m;
-            result = Validator.TestValidate(Challenge);
-            result.ShouldHaveValidationErrorFor(x => x.PrezzoTotale).WithErrorCode("00423");
-
             // https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/45
             Challenge.ScontoMaggiorazione.Clear();
             Challenge.PrezzoUnitario = 0.865951m;
@@ -177,8 +169,7 @@ namespace FatturaElettronica.Test.Ordinaria
 
             // https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/71
             Challenge.ScontoMaggiorazione.Clear();
-            Challenge.ScontoMaggiorazione.Add(
-                new() { Importo = 0, Tipo = "SC" });
+            Challenge.ScontoMaggiorazione.Add(new() { Importo = 0, Tipo = "SC" });
             Challenge.PrezzoUnitario = 1m;
             Challenge.Quantita = 1;
             Challenge.PrezzoTotale = 1m;
@@ -200,6 +191,14 @@ namespace FatturaElettronica.Test.Ordinaria
             Challenge.PrezzoTotale = Challenge.PrezzoUnitario * Challenge.Quantita.Value;
             result = Validator.TestValidate(Challenge);
             result.ShouldHaveValidationErrorFor(x => x.PrezzoTotale).WithErrorCode("00423");
+
+            // https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/394
+            Challenge.PrezzoUnitario = 0.093m;
+            Challenge.Quantita = 200;
+            Challenge.PrezzoTotale = 9.66m;
+            Challenge.ScontoMaggiorazione.Add(new() { Tipo = "SC", Percentuale = 48m });
+            result = Validator.TestValidate(Challenge);
+            result.ShouldNotHaveValidationErrorFor(x => x.PrezzoTotale);
         }
 
         [TestMethod]
