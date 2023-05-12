@@ -2,7 +2,14 @@
 
 ## In Development
 
-- *hic sunt leones*
+v 3.4.8
+-------
+
+Released on May 2, 2023
+
+- Fix: Se IdFiscaleIva di Cessionario e Cedente corrispondono, la fattura deve convalidare anche se in Cessionario è assente il codice fiscale. ([#396][396])
+ 
+[396]: https://github.com/FatturaElettronica/FatturaElettronica.NET/issues/396
 
 ## Stable
 
