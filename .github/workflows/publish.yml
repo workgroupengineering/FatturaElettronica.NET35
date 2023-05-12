@@ -71,7 +71,7 @@ jobs:
         }
         Write-Host "End enum $i"
 
-    - uses: actions/upload-artifact@v2  # upload test results
+    - uses: actions/upload-artifact@v3  # upload test results
       name: Packages Artficats
       if: success()
       with:

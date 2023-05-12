@@ -83,7 +83,7 @@ jobs:
     - name: Run VStest ${{ matrix.target }} (${{ matrix.configuration }})
       run: vstest.console src\test\bin\${{ matrix.configuration }}\${{ matrix.target }}\FatturaElettronica.Test.dll --Logger:"trx;LogFileName=${{ matrix.os }}-${{ matrix.configuration }}-${{ matrix.target }}.trx" --ResultsDirectory:./TestResults 
             
-    - uses: actions/upload-artifact@v2  # upload test results
+    - uses: actions/upload-artifact@v3  # upload test results
       name: Upload test results
       if: success() || failure()        # run this step even if previous step failed
       with:
